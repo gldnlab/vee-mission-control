@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "jobs must be an array" }, { status: 400 });
     }
 
-    await convex.mutation(api.crons.sync, { jobs });
+    await convex.mutation(api.cronJobs.sync, { jobs });
     return NextResponse.json({ ok: true, count: jobs.length });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });

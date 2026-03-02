@@ -21,7 +21,7 @@ export default function CalendarPage() {
   const [weekStart, setWeekStart] = useState(() =>
     startOfWeek(new Date(), { weekStartsOn: 1 })
   );
-  const jobs = useQuery(api.crons.list, {});
+  const jobs = useQuery(api.cronJobs.list, {});
   const days = eachDayOfInterval({ start: weekStart, end: endOfWeek(weekStart, { weekStartsOn: 1 }) });
   const today = startOfDay(new Date());
 
