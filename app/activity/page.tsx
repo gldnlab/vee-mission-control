@@ -57,7 +57,7 @@ export default function ActivityPage() {
 
   // Group by day
   const grouped: Record<string, typeof activities> = {};
-  (activities ?? []).forEach((a) => {
+  (activities ?? []).forEach((a: any) => {
     const key = String(startOfDay(new Date(a.timestamp)).getTime());
     if (!grouped[key]) grouped[key] = [];
     grouped[key]!.push(a);
@@ -110,7 +110,7 @@ export default function ActivityPage() {
             {dayLabel(Number(dayKey))}
           </div>
           <div className="space-y-2">
-            {grouped[dayKey]!.map((a) => (
+            {grouped[dayKey]!.map((a: any) => (
               <div
                 key={a._id}
                 className="bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-3 flex items-start gap-3 hover:border-zinc-700 transition-colors"

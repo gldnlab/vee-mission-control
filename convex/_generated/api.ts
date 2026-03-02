@@ -17,11 +17,13 @@ export const api = anyApi as unknown as {
     list: any;
     upsert: any;
     remove: any;
+    sync: any;
   };
   documents: {
     list: any;
     upsert: any;
     search: any;
+    sync: any;
   };
 };
 
