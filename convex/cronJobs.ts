@@ -13,6 +13,8 @@ export const sync = mutation({
         last_run: v.optional(v.number()),
         last_status: v.optional(v.string()),
         enabled: v.boolean(),
+        agent: v.optional(v.string()),
+        recipient: v.optional(v.string()),
       })
     ),
   },

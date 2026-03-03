@@ -27,6 +27,8 @@ export default defineSchema({
     last_status: v.optional(v.string()),
     enabled: v.boolean(),
     job_id: v.optional(v.string()),
+    agent: v.optional(v.string()),      // "Vee" | "Emma"
+    recipient: v.optional(v.string()),  // DM: "@username" | group: "name1, name2" | channel: "#name" | "internal"
   }).index("by_name", ["name"]),
 
   documents: defineTable({

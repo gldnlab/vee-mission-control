@@ -96,13 +96,17 @@ export default function CalendarPage() {
                 {dayJobs.map((job) => (
                   <div
                     key={job._id}
-                    className="text-xs bg-emerald-500/20 text-emerald-300 rounded px-2 py-1 truncate"
+                    className="text-xs bg-emerald-500/20 text-emerald-300 rounded px-2 py-1"
                     title={job.name}
                   >
                     {job.next_run && (
                       <span className="text-emerald-500 mr-1">{format(new Date(job.next_run), "HH:mm")}</span>
                     )}
-                    {job.name}
+                    <span className="block truncate">{job.name}</span>
+                    <div className="flex gap-1 mt-0.5 flex-wrap">
+                      {(job as any).agent && <span className="text-[10px] bg-violet-500/30 text-violet-300 rounded px-1">{(job as any).agent}</span>}
+                      {(job as any).recipient && <span className="text-[10px] bg-zinc-600/50 text-zinc-400 rounded px-1 truncate max-w-full">{(job as any).recipient}</span>}
+                    </div>
                   </div>
                 ))}
                 {dayJobs.length === 0 && (
@@ -138,8 +142,16 @@ export default function CalendarPage() {
             >
               <div className={clsx("w-2 h-2 rounded-full shrink-0", job.enabled ? "bg-emerald-400" : "bg-zinc-600")} />
               <div className="flex-1 min-w-0">
-                <div className="font-medium text-sm">{job.name}</div>
-                <div className="text-xs text-zinc-500">{job.schedule_human || job.schedule_expr}</div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-medium text-sm">{job.name}</span>
+                  {(job as any).agent && (
+                    <span className="text-[10px] bg-violet-500/20 text-violet-300 border border-violet-500/30 rounded-full px-2 py-0.5">{(job as any).agent}</span>
+                  )}
+                  {(job as any).recipient && (
+                    <span className="text-[10px] bg-zinc-700/50 text-zinc-400 border border-zinc-600/30 rounded-full px-2 py-0.5">{(job as any).recipient}</span>
+                  )}
+                </div>
+                <div className="text-xs text-zinc-500 mt-0.5">{job.schedule_human || job.schedule_expr}</div>
               </div>
               <div className="text-right text-xs text-zinc-500 shrink-0">
                 {job.next_run && <div>Next: {format(new Date(job.next_run), "MMM d, h:mm a")}</div>}
