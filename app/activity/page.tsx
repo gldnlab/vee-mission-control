@@ -1,8 +1,36 @@
 "use client";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { format, isToday, isYesterday, startOfDay } from "date-fns";
 import { useState } from "react";
+
+const DENVER_TZ = "America/Denver";
+
+function denverDateStr(ts: number): string {
+  return new Date(ts).toLocaleDateString("en-US", { timeZone: DENVER_TZ });
+}
+
+function dayLabel(ts: number): string {
+  const d = denverDateStr(ts);
+  const today = denverDateStr(Date.now());
+  const yesterday = denverDateStr(Date.now() - 86400000);
+  if (d === today) return "Today";
+  if (d === yesterday) return "Yesterday";
+  return new Date(ts).toLocaleDateString("en-US", {
+    timeZone: DENVER_TZ,
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
+}
+
+function formatTime(ts: number): string {
+  return new Date(ts).toLocaleTimeString("en-US", {
+    timeZone: DENVER_TZ,
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
 import {
   Activity,
   CheckCircle,
@@ -55,14 +83,16 @@ export default function ActivityPage() {
     action_type: filter === "all" ? undefined : filter,
   });
 
-  // Group by day
+  // Group by day (Denver timezone)
   const grouped: Record<string, typeof activities> = {};
   (activities ?? []).forEach((a: any) => {
-    const key = String(startOfDay(new Date(a.timestamp)).getTime());
+    const key = denverDateStr(a.timestamp);
     if (!grouped[key]) grouped[key] = [];
     grouped[key]!.push(a);
   });
-  const days = Object.keys(grouped).sort((a, b) => Number(b) - Number(a));
+  const days = Object.keys(grouped).sort((a, b) => {
+    return new Date(b).getTime() - new Date(a).getTime();
+  });
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -107,7 +137,7 @@ export default function ActivityPage() {
       {days.map((dayKey) => (
         <div key={dayKey} className="mb-8">
           <div className="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-3">
-            {dayLabel(Number(dayKey))}
+            {dayLabel(new Date(dayKey).getTime())}
           </div>
           <div className="space-y-2">
             {grouped[dayKey]!.map((a: any) => (
@@ -133,7 +163,7 @@ export default function ActivityPage() {
                   )}
                 </div>
                 <span className="text-xs text-zinc-600 shrink-0 font-mono">
-                  {format(new Date(a.timestamp), "h:mm a")}
+                  {formatTime(a.timestamp)}
                 </span>
               </div>
             ))}
