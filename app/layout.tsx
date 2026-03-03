@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ConvexClientProvider } from "@/components/ConvexClientProvider";
-import Sidebar from "@/components/Sidebar";
+import Sidebar, { BottomNav } from "@/components/Sidebar";
 import TopBar from "@/components/TopBar";
 
 export const metadata: Metadata = {
@@ -22,9 +22,10 @@ export default function RootLayout({
             <Sidebar />
             <div className="flex flex-col flex-1 overflow-hidden">
               <TopBar />
-              <main className="flex-1 overflow-y-auto p-6">{children}</main>
+              <main className="flex-1 overflow-y-auto p-4 md:p-6 pb-20 md:pb-6">{children}</main>
             </div>
           </div>
+          <BottomNav />
         </ConvexClientProvider>
       </body>
     </html>

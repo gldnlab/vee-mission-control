@@ -2,6 +2,8 @@
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useState } from "react";
+import { Activity, CheckCircle, XCircle, Clock, Filter } from "lucide-react";
+import { clsx } from "clsx";
 
 const DENVER_TZ = "America/Denver";
 
@@ -31,14 +33,6 @@ function formatTime(ts: number): string {
     hour12: true,
   });
 }
-import {
-  Activity,
-  CheckCircle,
-  XCircle,
-  Clock,
-  Filter,
-} from "lucide-react";
-import { clsx } from "clsx";
 
 const ACTION_TYPES = [
   "all",
@@ -63,17 +57,10 @@ const ACTION_COLORS: Record<string, string> = {
   document_synced: "bg-indigo-500/20 text-indigo-300",
 };
 
-function dayLabel(ts: number) {
-  const d = new Date(ts);
-  if (isToday(d)) return "Today";
-  if (isYesterday(d)) return "Yesterday";
-  return format(d, "EEEE, MMMM d");
-}
-
 function StatusIcon({ status }: { status: string }) {
-  if (status === "success") return <CheckCircle size={14} className="text-emerald-400 shrink-0" />;
-  if (status === "error") return <XCircle size={14} className="text-red-400 shrink-0" />;
-  return <Clock size={14} className="text-yellow-400 shrink-0" />;
+  if (status === "success") return <CheckCircle size={14} className="text-emerald-400 shrink-0 mt-0.5" />;
+  if (status === "error") return <XCircle size={14} className="text-red-400 shrink-0 mt-0.5" />;
+  return <Clock size={14} className="text-yellow-400 shrink-0 mt-0.5" />;
 }
 
 export default function ActivityPage() {
@@ -96,17 +83,17 @@ export default function ActivityPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-start justify-between mb-6 gap-3">
         <div>
-          <h1 className="text-xl font-semibold flex items-center gap-2">
-            <Activity size={20} className="text-violet-400" /> Activity Feed
+          <h1 className="text-lg md:text-xl font-semibold flex items-center gap-2">
+            <Activity size={18} className="text-violet-400" /> Activity Feed
           </h1>
-          <p className="text-sm text-zinc-500 mt-1">Everything Vee has done for you</p>
+          <p className="text-xs md:text-sm text-zinc-500 mt-1">Everything Vee has done for you</p>
         </div>
-        <div className="flex items-center gap-2">
-          <Filter size={14} className="text-zinc-500" />
+        <div className="flex items-center gap-2 shrink-0">
+          <Filter size={14} className="text-zinc-500 hidden sm:block" />
           <select
-            className="bg-zinc-800 border border-zinc-700 text-zinc-300 text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-violet-500"
+            className="bg-zinc-800 border border-zinc-700 text-zinc-300 text-xs md:text-sm rounded-lg px-2 md:px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-violet-500"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
           >
@@ -137,21 +124,21 @@ export default function ActivityPage() {
       {days.map((dayKey) => (
         <div key={dayKey} className="mb-8">
           <div className="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-3">
-            {dayLabel(new Date(dayKey).getTime())}
+            {dayLabel(new Date(dayKey + "T12:00:00").getTime())}
           </div>
           <div className="space-y-2">
             {grouped[dayKey]!.map((a: any) => (
               <div
                 key={a._id}
-                className="bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-3 flex items-start gap-3 hover:border-zinc-700 transition-colors"
+                className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 md:px-4 py-3 flex items-start gap-3 hover:border-zinc-700 transition-colors"
               >
                 <StatusIcon status={a.status} />
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-medium text-sm text-zinc-100">{a.title}</span>
+                  <div className="flex items-start gap-2 flex-wrap">
+                    <span className="font-medium text-sm text-zinc-100 leading-snug">{a.title}</span>
                     <span
                       className={clsx(
-                        "text-xs px-2 py-0.5 rounded-full font-medium",
+                        "text-xs px-2 py-0.5 rounded-full font-medium shrink-0",
                         ACTION_COLORS[a.action_type] ?? "bg-zinc-700 text-zinc-300"
                       )}
                     >
@@ -159,10 +146,10 @@ export default function ActivityPage() {
                     </span>
                   </div>
                   {a.description && (
-                    <p className="text-xs text-zinc-400 mt-0.5 truncate">{a.description}</p>
+                    <p className="text-xs text-zinc-400 mt-0.5 line-clamp-2">{a.description}</p>
                   )}
                 </div>
-                <span className="text-xs text-zinc-600 shrink-0 font-mono">
+                <span className="text-xs text-zinc-600 shrink-0 font-mono pt-0.5">
                   {formatTime(a.timestamp)}
                 </span>
               </div>
