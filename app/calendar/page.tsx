@@ -13,9 +13,23 @@ import {
   isBefore,
   startOfDay,
 } from "date-fns";
+import { formatInTimeZone, toZonedTime } from "date-fns-tz";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight, Calendar, Clock, CheckCircle, XCircle } from "lucide-react";
 import { clsx } from "clsx";
+
+const DENVER_TZ = "America/Denver";
+
+// Format a UTC ms timestamp in Denver time
+function fmtMT(tsMs: number, fmt: string): string {
+  return formatInTimeZone(new Date(tsMs), DENVER_TZ, fmt);
+}
+
+// Check if a UTC ms timestamp falls on the same local Denver day as `day`
+function isSameDayMT(tsMs: number, day: Date): boolean {
+  const zonedTs = toZonedTime(new Date(tsMs), DENVER_TZ);
+  return isSameDay(zonedTs, day);
+}
 
 export default function CalendarPage() {
   const [weekStart, setWeekStart] = useState(() =>
@@ -25,11 +39,11 @@ export default function CalendarPage() {
   const days = eachDayOfInterval({ start: weekStart, end: endOfWeek(weekStart, { weekStartsOn: 1 }) });
   const today = startOfDay(new Date());
 
-  // Map jobs to days by next_run timestamp
+  // Map jobs to days by next_run timestamp (Denver timezone)
   const jobsForDay = (day: Date) =>
     (jobs ?? []).filter((j) => {
       if (!j.next_run) return false;
-      return isSameDay(new Date(j.next_run), day);
+      return isSameDayMT(j.next_run, day);
     });
 
   // Also show all enabled jobs with no next_run in a sidebar
@@ -100,7 +114,7 @@ export default function CalendarPage() {
                     title={job.name}
                   >
                     {job.next_run && (
-                      <span className="text-emerald-500 mr-1">{format(new Date(job.next_run), "HH:mm")}</span>
+                      <span className="text-emerald-500 mr-1">{fmtMT(job.next_run, "h:mm a")}</span>
                     )}
                     <span className="block truncate">{job.name}</span>
                     <div className="flex gap-1 mt-0.5 flex-wrap">
@@ -154,8 +168,8 @@ export default function CalendarPage() {
                 <div className="text-xs text-zinc-500 mt-0.5">{job.schedule_human || job.schedule_expr}</div>
               </div>
               <div className="text-right text-xs text-zinc-500 shrink-0">
-                {job.next_run && <div>Next: {format(new Date(job.next_run), "MMM d, h:mm a")}</div>}
-                {job.last_run && <div>Last: {format(new Date(job.last_run), "MMM d, h:mm a")}</div>}
+                {job.next_run && <div>Next: {fmtMT(job.next_run, "MMM d, h:mm a")} MT</div>}
+                {job.last_run && <div>Last: {fmtMT(job.last_run, "MMM d, h:mm a")} MT</div>}
               </div>
               {job.last_status && (
                 <div className="shrink-0">
